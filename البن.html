@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مداد البن - خريطة مزارع وقرى رجال ألمع</title>
+    <!-- خطوط عربية فاخرة -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #4A2E1B; /* بني قهوة غامق دافئ */
+            --bg-color: #FBF8F5;      /* بيج ترابي هادئ */
+            --accent-color: #C2783E;  /* نحاسي دافئ */
+            --card-bg: #FFFFFF;
+            --text-main: #2C221E;
+            --border-color: #E6DCD0;
+            --gold: #D4A373;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 950px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(74, 46, 27, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+            min-height: 650px;
+        }
+
+        /* التحكم بالصفحات */
+        .page {
+            display: none;
+            padding: 2rem;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* الهيدر والعناوين */
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-header h1 {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .welcome-header p {
+            font-size: 1rem;
+            color: #7A6A5D;
+        }
+
+        .instruction-badge {
+            display: inline-block;
+            background: #F4ECE1;
+            color: var(--accent-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 0.8rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* الخريطة */
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            background: #F5EFE6;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .map-pin {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .map-pin:hover {
+            transform: translate(-50%, -110%) scale(1.1);
+        }
+
+        .pin-btn {
+            background: var(--primary-color);
+            color: #FFF;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            border: 2px solid var(--gold);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pin-pointer {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--primary-color);
+            margin: 0 auto;
+        }
+
+        /* الصفحة الثانية: التفاصيل */
+        .details-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-btn {
+            background: #F4ECE1;
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--border-color);
+        }
+
+        .farm-title {
+            font-family: 'Amiri', serif;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+        }
+
+        .details-card {
+            background: #FDFBF7;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #FFF;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-icon {
+            width: 42px;
+            height: 42px;
+            background: #F4ECE1;
+            color: var(--accent-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .info-text h4 {
+            font-size: 0.8rem;
+            color: #7A6A5D;
+        }
+
+        .info-text p {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .map-link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--accent-color);
+            color: #FFF;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        .map-link-btn:hover {
+            background: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- الصفحة الأولى: الشاشة الترحيبية والخريطة -->
+        <div class="page active" id="page-welcome">
+            <div class="welcome-header">
+                <h1>مِـدَادُ الـبَــنّ</h1>
+                <p>مرحباً بك في خريطة مزارع البن التفاعلية لرجال ألمع</p>
+                <div class="instruction-badge">
+                    <i class="fa-solid fa-hand-pointer"></i> اضغط على اسم المزرعة في الخريطة لعرض تفاصيلها
+                </div>
+            </div>
+
+            <div class="map-wrapper">
+                <!-- الرسم التخطيطي لخريطة رجال ألمع -->
+                <svg width="100%" height="100%" viewBox="0 0 500 600" preserveAspectRatio="xMidYMid meet">
+                    <!-- حد جغرافيا المحافظة -->
+                    <path fill="#EFE8DD" stroke="#C2783E" stroke-width="2.5" d="
+                        M 200,30 
+                        C 260,20 350,50 380,110 
+                        C 410,170 440,250 430,330 
+                        C 420,410 440,490 420,550 
+                        C 400,600 340,580 290,570 
+                        C 240,560 210,510 180,470 
+                        C 150,430 120,370 110,290 
+                        C 100,210 120,110 140,70 Z
+                    "/>
+                    <!-- طرق مزارع البن -->
+                    <path stroke="#D4A373" stroke-width="3" stroke-dasharray="6 4" fill="none" d="M 190,110 L 260,220 L 320,360 L 350,500" />
+                    <!-- التسميات الجغرافية -->
+                    <text x="170" y="80" fill="#4A2E1B" font-weight="bold" font-size="13">روام و وسانب</text>
+                    <text x="310" y="200" fill="#4A2E1B" font-weight="bold" font-size="13">جبل صلب</text>
+                    <text x="120" y="350" fill="#4A2E1B" font-weight="bold" font-size="13">العوص</text>
+                    <text x="350" y="480" fill="#4A2E1B" font-weight="bold" font-size="13">جبل حسوة</text>
+                </svg>
+
+                <!-- دبابيس المزارع المقامة على الخريطة -->
+                <div class="map-pin" style="top: 30%; left: 56%;" onclick="openDetails('rawabi')">
+                    <div class="pin-btn"><i class="fa-solid fa-seedling"></i> مزرعة الروابي</div>
+                    <div class="pin-pointer"></div>
+                </div>
+
+                <div class="map-pin" style="top: 40%; left: 66%;" onclick="openDetails('wajeev')">
+                    <div class="pin-btn"><i class="fa-solid fa-seedling"></i> مزرعة الوجيف</div>
+                    <div class="pin-pointer"></div>
+                </div>
+
+                <div class="map-pin" style="top: 55%; left: 36%;" onclick="openDetails('zaher')">
+                    <div class="pin-btn"><i class="fa-solid fa-seedling"></i> مزرعة أبناء زاهر</div>
+                    <div class="pin-pointer"></div>
+                </div>
+
+                <div class="map-pin" style="top: 76%; left: 70%;" onclick="openDetails('nokhba')">
+                    <div class="pin-btn"><i class="fa-solid fa-seedling"></i> مزرعة حسوة</div>
+                    <div class="pin-pointer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- الصفحة الثانية: بيانات وتفاصيل المزرعة -->
+        <div class="page" id="page-details">
+            <div class="details-header">
+                <h2 class="farm-title" id="det-name">اسم المزرعة</h2>
+                <button class="back-btn" onclick="showWelcomePage()">
+                    <i class="fa-solid fa-arrow-right"></i> العودة للخريطة
+                </button>
+            </div>
+
+            <div class="details-card">
+                <!-- الموقع الجغرافي -->
+                <div class="info-row" id="row-location">
+                    <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="info-text">
+                        <h4>الموقع الجغرافي</h4>
+                        <p id="det-location">-</p>
+                    </div>
+                </div>
+
+                <!-- عدد الأشجار -->
+                <div class="info-row" id="row-trees">
+                    <div class="info-icon"><i class="fa-solid fa-tree"></i></div>
+                    <div class="info-text">
+                        <h4>إجمالي عدد الأشجار</h4>
+                        <p id="det-trees">-</p>
+                    </div>
+                </div>
+
+                <!-- الارتفاع -->
+                <div class="info-row" id="row-elevation">
+                    <div class="info-icon"><i class="fa-solid fa-mountain"></i></div>
+                    <div class="info-text">
+                        <h4>الارتفاع عن سطح البحر</h4>
+                        <p id="det-elevation">-</p>
+                    </div>
+                </div>
+
+                <!-- رابط الخريطة -->
+                <a href="#" id="det-link" target="_blank" class="map-link-btn">
+                    <i class="fa-solid fa-map-location-dot"></i> فتح الموقع في خرائط Google
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const farms = {
+            'rawabi': {
+                name: 'مزرعة الروابي',
+                location: 'جبل صلب',
+                trees: '600 شجرة',
+                elevation: '1600 متر',
+                url: 'https://maps.app.goo.gl/n6dkwEaS9hyn4H6c7?g_st=ac'
+            },
+            'wajeev': {
+                name: 'مزرعة الوجيف',
+                location: 'جبل صلب',
+                trees: '500 شجرة',
+                elevation: '1450 متر',
+                url: 'https://maps.app.goo.gl/DhMUbHRXXAMVW3RU9?g_st=ac'
+            },
+            'zaher': {
+                name: 'مزرعة أبناء زاهر',
+                location: 'العوص والشعبين',
+                trees: '800 شجرة',
+                elevation: '1300 متر',
+                url: 'https://maps.app.goo.gl/9CUgpZ5iNKhvoAuQ6?g_st=ac'
+            },
+            'nokhba': {
+                name: 'مزرعة حسوة',
+                location: null,
+                trees: '1000 شجرة',
+                elevation: '1600 متر',
+                url: null
+            }
+        };
+
+        function openDetails(farmId) {
+            const farm = farms[farmId];
+            if (!farm) return;
+
+            document.getElementById('det-name').textContent = farm.name;
+
+            // إظهار أو إخفاء الموقع الجغرافي
+            toggleRow('row-location', 'det-location', farm.location);
+
+            document.getElementById('det-trees').textContent = farm.trees;
+            document.getElementById('det-elevation').textContent = farm.elevation;
+
+            // زر خرائط جوجل
+            const linkBtn = document.getElementById('det-link');
+            if (farm.url) {
+                linkBtn.style.display = 'flex';
+                linkBtn.href = farm.url;
+            } else {
+                linkBtn.style.display = 'none';
+            }
+
+            // التبديل بين الصفحات
+            document.getElementById('page-welcome').classList.remove('active');
+            document.getElementById('page-details').classList.add('active');
+        }
+
+        function toggleRow(rowId, textId, value) {
+            const row = document.getElementById(rowId);
+            if (value) {
+                row.style.display = 'flex';
+                document.getElementById(textId).textContent = value;
+            } else {
+                row.style.display = 'none';
+            }
+        }
+
+        function showWelcomePage() {
+            document.getElementById('page-details').classList.remove('active');
+            document.getElementById('page-welcome').classList.add('active');
+        }
+    </script>
+</body>
+</html>
